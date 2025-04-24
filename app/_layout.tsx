@@ -1,39 +1,59 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { useFonts } from 'expo-font'
+import { Stack } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
+import { useEffect } from 'react'
+import { StyleSheet, View } from 'react-native'
+import 'react-native-reanimated'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+	const [loaded] = useFonts({
+		InterRegular: require('../assets/fonts/Inter_18pt-Regular.ttf'),
+		InterMedium: require('../assets/fonts/Inter_18pt-Medium.ttf'),
+		InterBold: require('../assets/fonts/Inter_24pt-Bold.ttf'),
+		InterItalic: require('../assets/fonts/Inter_28pt-Italic.ttf'),
+	})
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+	useEffect(() => {
+		if (loaded) {
+			SplashScreen.hideAsync()
+		}
+	}, [loaded])
 
-  if (!loaded) {
-    return null;
-  }
+	if (!loaded) {
+		return null
+	}
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+	const queryClient = new QueryClient()
+
+	return (
+		<QueryClientProvider client={queryClient}>
+			<SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+				<View style={styles.container}>
+					<Stack screenOptions={{ headerShown: false }}>
+						<Stack.Screen name='+not-found' />
+						<Stack.Screen name='sign-up' />
+						<Stack.Screen name='login' />
+					</Stack>
+				</View>
+			</SafeAreaView>
+		</QueryClientProvider>
+	)
 }
+
+const styles = StyleSheet.create({
+	container: {
+		fontSize: 25,
+		fontWeight: 500,
+		fontFamily: 'InterItalic',
+		width: '100%',
+		height: '100%',
+		paddingTop: 20,
+		paddingBottom: 10,
+		paddingHorizontal: 16,
+		backgroundColor: '#fff',
+	},
+})
