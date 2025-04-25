@@ -1,11 +1,38 @@
 import { ArrowBack } from '@/components/ui/ArrowBack'
 import { SettingsTileUI } from '@/components/ui/SettingsTileUI'
-import { useState } from 'react'
+import { getUser, loginUser } from '@/lib/auth'
+import { removeUser, setUser } from '@/store/slices/authSlice'
+import { RootState } from '@/store/store'
+import { useEffect, useState } from 'react'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function Profile() {
 	const [languageIsOpen, setLanguageIsOpen] = useState<boolean>(false)
 	const [selectedLanguage, setSelectedLanguage] = useState<string>('English')
+	const user = useSelector((state: RootState) => state.auth)
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			const fetchedUser = await getUser()
+
+			if (fetchedUser && fetchedUser.image) {
+				console.log(fetchedUser.image)
+			} else {
+				console.log('image field is not available in fetchedUser.')
+			}
+
+			if (fetchedUser) {
+				dispatch(setUser({ email: fetchedUser.email, username: fetchedUser.username, password: '123111', image: fetchedUser.image }))
+			}
+			setLoading(false)
+		}
+
+		fetchUser()
+	}, [])
+
+	const dispatch = useDispatch()
 
 	return (
 		<>
@@ -74,8 +101,8 @@ export default function Profile() {
 
 						<View style={{ gap: 32, marginTop: 16 }}>
 							<SettingsTileUI
-								text='John Doe'
-								icon={<View style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#EBEFF5' }}></View>}
+								text={user.username}
+								icon={<Image source={{ uri: user.image }} width={32} height={32} resizeMode='cover' />}
 								style={{ paddingVertical: 27 }}
 							/>
 
@@ -96,6 +123,7 @@ export default function Profile() {
 								actionButton={
 									<Image source={require('../../assets/images/arrow_dropdown.png')} style={{ position: 'absolute', top: 20, right: 25 }} />
 								}
+								onPress={() => dispatch(removeUser())}
 							/>
 						</View>
 					</>

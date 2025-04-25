@@ -1,17 +1,34 @@
 import { useRouter } from 'expo-router'
-import { Image, Pressable } from 'react-native'
+import { GestureResponderEvent, Image, Pressable, View } from 'react-native'
 
-export function ArrowBack() {
+type Props = {
+	onPress?: (event: GestureResponderEvent) => void
+}
+
+export function ArrowBack({ onPress }: Props) {
 	const router = useRouter()
 
+	const handlePress = (event: GestureResponderEvent) => {
+		if (onPress) {
+			onPress(event)
+		} else router.back()
+	}
+
 	return (
-		<Pressable onPress={() => router.back()}>
-			<Image
-				source={require('../../assets/images/arrow_back.png')}
-				style={{ position: 'absolute', top: 17, left: 16, padding: 1 }}
-				width={24}
-				height={24}
-			/>
+		<Pressable onPress={handlePress}>
+			<View
+				style={{
+					position: 'absolute',
+					top: 0,
+					left: 2,
+					width: 50,
+					height: 50,
+					alignItems: 'center',
+					justifyContent: 'center',
+				}}
+			>
+				<Image source={require('../../assets/images/arrow_back.png')} style={{ padding: 1 }} width={24} height={24} />
+			</View>
 		</Pressable>
 	)
 }

@@ -1,20 +1,45 @@
 import { PostItemUI } from '@/components/ui/PostItemUI'
 import { Colors, Radius } from '@/constants/styles'
+import { getUser, loginUser } from '@/lib/auth'
 import { usePosts } from '@/services/posts.service'
+import { setUser } from '@/store/slices/authSlice'
+import { RootState } from '@/store/store'
 import { Link } from 'expo-router'
+import { useEffect, useState } from 'react'
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function Home() {
 	const { data: posts, isLoading } = usePosts()
 
-	// const postsToRender = posts.
+	const [loading, setLoading] = useState(true)
+
+	const dispatch = useDispatch()
+
+	const user = useSelector((state: RootState) => state.auth)
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			const fetchedUser = await getUser()
+			console.log(fetchedUser)
+
+			if (fetchedUser) {
+				dispatch(setUser({ email: fetchedUser.email, username: fetchedUser.username, password: '123111', image: fetchedUser.image }))
+			}
+			setLoading(false)
+		}
+
+		if (!user.username) {
+			fetchUser()
+		}
+	}, [])
 
 	return (
 		<ScrollView>
 			<View>
 				<View style={styles.top_section}>
 					<Text style={{ color: '#fff', fontSize: 13 }}>Your name</Text>
-					<Text style={{ color: '#fff', fontSize: 28, fontWeight: '700' }}>John Doe</Text>
+					<Text style={{ color: '#fff', fontSize: 28, fontWeight: '700' }}> {user.username}</Text>
 				</View>
 
 				<View style={styles.go_to_call}>
