@@ -1,6 +1,5 @@
 import { PostItemUI } from '@/components/ui/PostItemUI'
 import { Colors, Radius } from '@/constants/styles'
-import { getUser, loginUser } from '@/lib/auth'
 import { usePosts } from '@/services/posts.service'
 import { setUser } from '@/store/slices/authSlice'
 import { RootState } from '@/store/store'
@@ -17,22 +16,6 @@ export default function Home() {
 	const dispatch = useDispatch()
 
 	const user = useSelector((state: RootState) => state.auth)
-
-	useEffect(() => {
-		const fetchUser = async () => {
-			const fetchedUser = await getUser()
-			console.log(fetchedUser)
-
-			if (fetchedUser) {
-				dispatch(setUser({ email: fetchedUser.email, username: fetchedUser.username, password: '123111', image: fetchedUser.image }))
-			}
-			setLoading(false)
-		}
-
-		if (!user.username) {
-			fetchUser()
-		}
-	}, [])
 
 	return (
 		<ScrollView>

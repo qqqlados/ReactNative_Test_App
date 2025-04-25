@@ -1,12 +1,8 @@
 import { ButtonUI } from '@/components/ui/ButtonUI'
 import { TilesListUI } from '@/components/ui/TilesListUI'
 import { Colors } from '@/constants/styles'
-import { loginUser } from '@/lib/auth'
-import { RootState } from '@/store/store'
-import { Link, useRouter } from 'expo-router'
-import { useState } from 'react'
-import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native'
-import { useSelector } from 'react-redux'
+import { useRouter } from 'expo-router'
+import { StyleSheet, View } from 'react-native'
 
 export default function WelcomeScreen() {
 	const textData = ['Lorem ipsum 2', 'Lorem ipsum', 'Lorem ipsum 4', 'Lorem ipsum 3', 'Lorem ipsum 5']

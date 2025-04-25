@@ -2,8 +2,9 @@ import { Colors } from '@/constants/styles'
 import { useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export function PINPad({ digitsQuantity = 5 }: { digitsQuantity: 4 | 5 }) {
-	const [pin, setPin] = useState<string[]>([])
+type Props = { digitsQuantity: 4 | 5; PIN: string[]; setPIN: React.Dispatch<React.SetStateAction<string[]>> }
+
+export function PINPad({ digitsQuantity = 5, PIN, setPIN }: Props) {
 	const [activeKey, setActiveKey] = useState<string | null>(null)
 
 	const handlePress = (value: string) => {
@@ -11,13 +12,10 @@ export function PINPad({ digitsQuantity = 5 }: { digitsQuantity: 4 | 5 }) {
 		setTimeout(() => setActiveKey(null), 100)
 
 		if (value === 'back') {
-			setPin(prev => prev.slice(0, -1))
-		} else if (pin.length < digitsQuantity) {
-			setPin(prev => [...prev, value])
+			setPIN(prev => prev.slice(0, -1))
+		} else if (PIN.length < digitsQuantity) {
+			setPIN(prev => [...prev, value])
 		}
-		// else if (pin.length == 5) {
-
-		// }
 	}
 
 	const buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'back']
@@ -26,7 +24,7 @@ export function PINPad({ digitsQuantity = 5 }: { digitsQuantity: 4 | 5 }) {
 		<View style={styles.wrapper}>
 			<View style={styles.pinDisplay}>
 				{[...Array(digitsQuantity)].map((_, i) => (
-					<View key={i} style={[styles.circle, pin[i] && styles.filled]} />
+					<View key={i} style={[styles.circle, PIN[i] && styles.filled]} />
 				))}
 			</View>
 

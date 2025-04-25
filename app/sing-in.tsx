@@ -8,8 +8,8 @@ import { CreatePIN, RepeatPIN } from '../components/ui/PINScreens'
 import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
-import { getUser, loginUser } from '@/lib/auth'
-import { setUser } from '@/store/slices/authSlice'
+import { loginUser } from '@/lib/auth'
+import { setAccessToken, setUser } from '@/store/slices/authSlice'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LoginSchema } from '@/lib/formSchema'
 
@@ -18,7 +18,15 @@ export default function SignInScreen() {
 	const [createPinIsShowed, setCreatePinIsShowed] = useState<boolean>(false)
 	const [repeatPinIsShowed, setRepeatPinIsShowed] = useState<boolean>(false)
 
+	const [userData, setUserData] = useState<{ email: string; username: string; password: string; image: string } | {}>({})
+
+	const [PIN, setPIN] = useState<string[]>([])
+
 	const dispatch = useDispatch()
+
+	const user = useSelector((state: RootState) => state.auth)
+
+	const token = useSelector((state: RootState) => state.auth.accessToken)
 
 	const {
 		control,
@@ -27,36 +35,38 @@ export default function SignInScreen() {
 		setError,
 	} = useForm({
 		defaultValues: {
-			email: '',
+			username: '',
 			password: '',
 		},
 		resolver: zodResolver(LoginSchema),
 	})
 
-	const onSubmit = async (data: { email: string; password: string }) => {
-		const result = await loginUser({ username: data.email, password: data.password })
+	const onSubmit = async (data: { username: string; password: string }) => {
+		const result = await loginUser({ username: data.username, password: data.password })
 
-		if (result == undefined) {
-			setError('root', { message: 'Error: Invalid E-mail or Password' })
+		if (result && Object.hasOwn(result, 'message')) {
+			return setError('root', { message: 'Error: Invalid E-mail or Password' })
 		}
 
-		setCreatePinIsShowed(true)
+		setUserData({ email: result.email, username: data.username, password: data.password, image: result.image })
+
+		return setCreatePinIsShowed(true)
+
+		//@ts-ignore
 	}
 
-	const setPIN = () => {
-		setRepeatPinIsShowed(true)
-	}
+	const fromCloseToRepeatPIN = () => {
+		setCreatePinIsShowed(false)
 
-	const repeatPIN = () => {
 		setRepeatPinIsShowed(true)
 	}
 
 	return (
 		<>
 			{createPinIsShowed ? (
-				<CreatePIN setPIN={setPIN} />
+				<CreatePIN navigateToRepeatPIN={fromCloseToRepeatPIN} PIN={PIN} setPIN={setPIN} />
 			) : repeatPinIsShowed ? (
-				<RepeatPIN repeatPIN={repeatPIN} />
+				<RepeatPIN setRepeatPinIsShowed={setRepeatPinIsShowed} PIN={PIN} setPIN={setPIN} userData={userData} />
 			) : (
 				<KeyboardAvoidingView style={{ flex: 1 }} behavior={'padding'} keyboardVerticalOffset={30}>
 					<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -78,7 +88,7 @@ export default function SignInScreen() {
 
 									<View>
 										<Controller
-											name='email'
+											name='username'
 											control={control}
 											render={({ field: { onChange, value, onBlur } }) => (
 												<>
@@ -86,8 +96,8 @@ export default function SignInScreen() {
 														{errors.root && <Image source={require('../assets/images/exclamation.png')} />}
 													</InputUI>
 
-													{errors.email && (
-														<View style={{ marginTop: -20, paddingLeft: '27%' }}>{<Text style={styles.error}>{errors.email.message}</Text>}</View>
+													{errors.username && (
+														<View style={{ marginTop: -20, paddingLeft: '27%' }}>{<Text style={styles.error}>{errors.username.message}</Text>}</View>
 													)}
 												</>
 											)}

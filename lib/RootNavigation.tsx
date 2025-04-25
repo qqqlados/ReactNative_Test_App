@@ -6,7 +6,7 @@ export default function RootNavigation() {
 	const username = useSelector((state: RootState) => state.auth.username)
 
 	if (username) {
-		return <Redirect href={'/(tabs)/Home'} />
+		return <Redirect href={'/enter-pin'} />
 	} else {
 		return <Redirect href={'/'} />
 	}

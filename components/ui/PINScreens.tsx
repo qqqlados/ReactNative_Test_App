@@ -2,10 +2,18 @@ import { ArrowBack } from '@/components/ui/ArrowBack'
 import { ButtonUI } from '@/components/ui/ButtonUI'
 import { PINPad } from '@/components/ui/PINPad'
 import { Colors } from '@/constants/styles'
-import React, { useState } from 'react'
+import { setPIN, setUser } from '@/store/slices/authSlice'
+import { RootState } from '@/store/store'
+import React, { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 
-export function CreatePIN({ setPIN }: { setPIN: () => void }) {
+type Props = {
+	PIN: string[]
+	setPIN: React.Dispatch<React.SetStateAction<string[]>>
+}
+
+export function CreatePIN({ PIN, setPIN, navigateToRepeatPIN }: Props & { navigateToRepeatPIN: () => void }) {
 	return (
 		<View style={{ flex: 1, backgroundColor: '#fff' }}>
 			<ArrowBack />
@@ -16,15 +24,38 @@ export function CreatePIN({ setPIN }: { setPIN: () => void }) {
 				<Text style={{ fontWeight: '400', color: Colors.lightGray, marginTop: 38 }}>enter 5 digit code:</Text>
 
 				<View style={{ flex: 1, width: '100%', justifyContent: 'space-between' }}>
-					<PINPad digitsQuantity={5} />
-					<ButtonUI title='Continue' />
+					<PINPad digitsQuantity={5} PIN={PIN} setPIN={setPIN} />
+
+					<ButtonUI title='Continue' onPress={navigateToRepeatPIN} disabled={PIN.length < 5} />
 				</View>
 			</View>
 		</View>
 	)
 }
 
-export function RepeatPIN({ repeatPIN }: { repeatPIN: () => void }) {
+export function RepeatPIN({
+	PIN,
+	setRepeatPinIsShowed,
+	userData,
+}: Props & {
+	setRepeatPinIsShowed: React.Dispatch<React.SetStateAction<boolean>>
+	userData: { email: string; username: string; password: string; image: string } | {}
+}) {
+	const dispatch = useDispatch()
+
+	const [repeatedPIN, setRepeatedPIN] = useState<string[]>([])
+
+	const handlePress = () => {
+		if (repeatedPIN.length === PIN.length && repeatedPIN.every((value, index) => value === PIN[index])) {
+			setRepeatPinIsShowed(false)
+
+			dispatch(setPIN(repeatedPIN))
+
+			//@ts-ignore
+			return dispatch(setUser(userData))
+		}
+	}
+
 	return (
 		<View style={{ flex: 1, backgroundColor: '#fff' }}>
 			<ArrowBack />
@@ -35,30 +66,10 @@ export function RepeatPIN({ repeatPIN }: { repeatPIN: () => void }) {
 				<Text style={{ fontWeight: '400', color: Colors.lightGray, marginTop: 38 }}>enter 5 digit code:</Text>
 
 				<View style={{ flex: 1, width: '100%', justifyContent: 'space-between' }}>
-					<PINPad digitsQuantity={5} />
-					<ButtonUI title='Continue' />
+					<PINPad digitsQuantity={5} PIN={repeatedPIN} setPIN={setRepeatedPIN} />
+					<ButtonUI title='Continue' onPress={handlePress} disabled={repeatedPIN.length < 5} />
 				</View>
 			</View>
 		</View>
 	)
 }
-
-// export function ExistingUserPIN() {
-// 	return (
-// 		<View style={{ flex: 1, backgroundColor: '#fff' }}>
-// 			<ArrowBack />
-
-// 			<View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-// 				<Image source={require('../../assets/images/phone.png')} width={24} height={24} />
-// 				<Text style={{ marginTop: 10 }}>johndoe@test.com</Text>
-// 				<Text style={{ marginTop: 10, color: Colors.orange }}>Change Account</Text>
-// 				<Text style={{ fontWeight: '400', color: Colors.lightGray, marginTop: 38 }}>enter 4 digit code:</Text>
-
-// 				<View style={{ flex: 1, width: '100%', justifyContent: 'space-between' }}>
-// 					<PINPad digitsQuantity={4} />
-// 					<ButtonUI title='Continue' />
-// 				</View>
-// 			</View>
-// 		</View>
-// 	)
-// }

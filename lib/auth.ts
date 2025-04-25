@@ -16,23 +16,24 @@ export const loginUser = async ({ username, password }: { username: string; pass
 	return signUpResponse
 }
 
-export const getUser = async () => {
-	const token = useSelector((state: RootState) => state.auth.accessToken)
+// export const getUser = async () => {
+// 	const token = useSelector((state: RootState) => state.auth.accessToken)
 
-	try {
-		const user = await fetch('https://dummyjson.com/auth/me', {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`, // Замінити токен
-			},
-			credentials: 'include',
-		})
-			.then(res => res.json())
-			.then(res => console.log(res))
+// 	try {
+// 		const response = await fetch('https://dummyjson.com/auth/me', {
+// 			method: 'GET',
+// 			headers: {
+// 				Authorization: `Bearer ${token}`,
+// 			},
+// 			credentials: 'include',
+// 		})
 
-		return user
-	} catch (error) {
-		console.log(error)
-		return null
-	}
-}
+// 		const data = await response.json()
+// 		console.log('user inside getUser:', data)
+
+// 		return data
+// 	} catch (error) {
+// 		console.log('getUser error:', error)
+// 		return null
+// 	}
+// }

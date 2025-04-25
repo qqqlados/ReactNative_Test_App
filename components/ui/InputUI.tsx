@@ -1,4 +1,5 @@
 import { Colors, Radius } from '@/constants/styles'
+import React from 'react'
 import { StyleSheet, TextInput, TextInputProps, View, Text } from 'react-native'
 
 type CustomProps = {
@@ -8,30 +9,32 @@ type CustomProps = {
 	children?: React.ReactNode
 }
 
-export function InputUI(props: TextInputProps & CustomProps) {
+// Обгортка через forwardRef
+export const InputUI = React.forwardRef<TextInput, TextInputProps & CustomProps>((props, ref) => {
 	return (
 		<>
 			{props.label && <Text style={styles.label}>{props.label}</Text>}
 
 			<View style={{ position: 'relative' }}>
-				{props.icon ? <View style={styles.iconWrapper}>{props.icon}</View> : ''}
+				{props.icon && <View style={styles.iconWrapper}>{props.icon}</View>}
 
 				<TextInput
+					ref={ref} // ← передаємо ref сюди
+					{...props}
 					style={[
 						styles.input,
 						props.isPassword ? { color: Colors.lightGray } : { color: Colors.primary },
 						{ paddingLeft: props.icon ? 48 : 16 },
 						props.style,
 					]}
-					{...props}
 					placeholderTextColor={Colors.secondary}
 				/>
 			</View>
 
-			{props.children && <Text>{props.children}</Text>}
+			{props.children && <View>{props.children}</View>}
 		</>
 	)
-}
+})
 
 const styles = StyleSheet.create({
 	label: {
