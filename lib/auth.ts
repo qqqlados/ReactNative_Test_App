@@ -1,5 +1,6 @@
-import { RootState } from '@/store/store'
-import { useSelector } from 'react-redux'
+import * as SecureStore from 'expo-secure-store'
+import * as LocalAuthentication from 'expo-local-authentication'
+import { Alert } from 'react-native'
 
 export const loginUser = async ({ username, password }: { username: string; password: string }) => {
 	const signUpResponse = await fetch('https://dummyjson.com/auth/login', {
@@ -16,24 +17,62 @@ export const loginUser = async ({ username, password }: { username: string; pass
 	return signUpResponse
 }
 
-// export const getUser = async () => {
-// 	const token = useSelector((state: RootState) => state.auth.accessToken)
+export const saveToken = async (token: string) => {
+	try {
+		await SecureStore.setItemAsync('access_token', token)
+	} catch (error) {
+		console.error('Error saving token:', error)
+	}
+}
 
-// 	try {
-// 		const response = await fetch('https://dummyjson.com/auth/me', {
-// 			method: 'GET',
-// 			headers: {
-// 				Authorization: `Bearer ${token}`,
-// 			},
-// 			credentials: 'include',
-// 		})
+export const getToken = async (): Promise<string | null> => {
+	try {
+		const token = await SecureStore.getItemAsync('access_token')
+		return token
+	} catch (error) {
+		console.error('Error retrieving token:', error)
+		return null
+	}
+}
 
-// 		const data = await response.json()
-// 		console.log('user inside getUser:', data)
+export const savePIN = async (PIN: string[]) => {
+	try {
+		await SecureStore.setItemAsync('PIN', JSON.stringify(PIN))
+	} catch (error) {
+		console.error('Error saving PIN:', error)
+	}
+}
 
-// 		return data
-// 	} catch (error) {
-// 		console.log('getUser error:', error)
-// 		return null
-// 	}
-// }
+export const getPIN = async (): Promise<string | null> => {
+	try {
+		const PIN = await SecureStore.getItemAsync('PIN')
+		return PIN
+	} catch (error) {
+		console.error('Error retrieving PIN:', error)
+		return null
+	}
+}
+
+export const authWithBiometrics = async () => {
+	const hasBiometrics = await LocalAuthentication.hasHardwareAsync()
+	if (!hasBiometrics) {
+		Alert.alert('Biometrics not available', 'Your device does not support biometric authentication')
+		return
+	}
+
+	const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync()
+	const result = await LocalAuthentication.authenticateAsync({
+		promptMessage: 'Authenticate with biometrics',
+		fallbackLabel: 'Use PIN',
+	})
+
+	if (result.success) {
+		Alert.alert('Authentication successful', 'You have been authenticated')
+
+		return { message: 'Successfully authenticated' }
+	} else {
+		Alert.alert('Authentication failed', 'Biometric authentication failed')
+
+		return { message: 'Authentication failed' }
+	}
+}

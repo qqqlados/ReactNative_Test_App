@@ -1,6 +1,5 @@
 import { InputUI } from '@/components/ui/InputUI'
 import { PostItemSearchPillowUI } from '@/components/ui/PostItemSearchPillowUI'
-import { PostItemUI } from '@/components/ui/PostItemUI'
 import { IPost } from '@/lib/types'
 import { usePosts } from '@/services/posts.service'
 import { useEffect, useState } from 'react'
@@ -31,7 +30,7 @@ export default function Search() {
 			<View style={{ marginTop: 16 }}>
 				<InputUI
 					placeholder='Search Products...'
-					icon={<Image source={require('../../assets/images/search_icon.png')} width={16} height={16} />}
+					leftIcon={<Image source={require('../../assets/images/search_icon.png')} width={16} height={16} />}
 					onChangeText={handleChange}
 				/>
 			</View>

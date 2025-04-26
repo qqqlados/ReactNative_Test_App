@@ -2,16 +2,15 @@ import { ArrowBack } from '@/components/ui/ArrowBack'
 import { ButtonUI } from '@/components/ui/ButtonUI'
 import { InputUI } from '@/components/ui/InputUI'
 import { Colors, Radius } from '@/constants/styles'
-import { useEffect, useState } from 'react'
 import { Image, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { CreatePIN, RepeatPIN } from '../components/ui/PINScreens'
 import { useForm, Controller } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '@/store/store'
-import { loginUser } from '@/lib/auth'
-import { setAccessToken, setUser } from '@/store/slices/authSlice'
+import { useDispatch } from 'react-redux'
+import { loginUser, saveToken } from '@/lib/auth'
+import { removeEnterPINScreen, setUser } from '@/store/slices/authSlice'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LoginSchema } from '@/lib/formSchema'
+import { useState } from 'react'
 
 export default function SignInScreen() {
 	const [passwordIsHidden, setPasswordIsHidden] = useState<boolean>(true)
@@ -23,10 +22,6 @@ export default function SignInScreen() {
 	const [PIN, setPIN] = useState<string[]>([])
 
 	const dispatch = useDispatch()
-
-	const user = useSelector((state: RootState) => state.auth)
-
-	const token = useSelector((state: RootState) => state.auth.accessToken)
 
 	const {
 		control,
@@ -48,11 +43,15 @@ export default function SignInScreen() {
 			return setError('root', { message: 'Error: Invalid E-mail or Password' })
 		}
 
+		if (result && result.accessToken) {
+			await saveToken(result.accessToken)
+		}
+
 		setUserData({ email: result.email, username: data.username, password: data.password, image: result.image })
 
-		return setCreatePinIsShowed(true)
+		dispatch(removeEnterPINScreen())
 
-		//@ts-ignore
+		return setCreatePinIsShowed(true)
 	}
 
 	const fromCloseToRepeatPIN = () => {
@@ -84,21 +83,43 @@ export default function SignInScreen() {
 										</View>
 									</View>
 
-									{errors.root && <Text style={styles.error}>{errors.root.message}</Text>}
-
-									<View>
+									<View style={{ position: 'relative' }}>
+										<View
+											style={{
+												backgroundColor: 'red',
+												width: '100%',
+												position: 'absolute',
+												top: -30,
+												right: -16,
+												alignItems: 'flex-start',
+											}}
+										>
+											{errors.root ? (
+												<Text style={styles.error}>{errors.root.message}</Text>
+											) : errors.username ? (
+												<Text style={styles.error}>{errors.username.message}</Text>
+											) : errors.password ? (
+												<Text style={styles.error}>{errors.password.message}</Text>
+											) : (
+												''
+											)}
+										</View>
 										<Controller
 											name='username'
 											control={control}
 											render={({ field: { onChange, value, onBlur } }) => (
 												<>
-													<InputUI placeholder='Your email' label={'E-mail'} onBlur={onBlur} onChangeText={onChange} value={value}>
-														{errors.root && <Image source={require('../assets/images/exclamation.png')} />}
-													</InputUI>
-
-													{errors.username && (
-														<View style={{ marginTop: -20, paddingLeft: '27%' }}>{<Text style={styles.error}>{errors.username.message}</Text>}</View>
-													)}
+													<InputUI
+														placeholder='Your email'
+														label={'E-mail'}
+														onBlur={onBlur}
+														onChangeText={onChange}
+														value={value}
+														error={Boolean(errors.root)}
+														rightIcon={
+															errors.root && <Image source={require('../assets/images/exclamation.png')} style={{ width: 18, height: 18 }} />
+														}
+													></InputUI>
 												</>
 											)}
 										></Controller>
@@ -116,16 +137,29 @@ export default function SignInScreen() {
 														onBlur={onBlur}
 														onChangeText={onChange}
 														value={value}
-													>
-														<Pressable onPress={() => setPasswordIsHidden(state => !state)}>
-															<Image style={styles.eye_image} source={require('../assets/images/eye_orange.png')} width={18} height={11} />
-														</Pressable>
-													</InputUI>
+														error={Boolean(errors.root)}
+														rightIcon={
+															<View
+																style={{
+																	flexDirection: 'row',
+																	justifyContent: 'center',
+																	alignItems: 'center',
+																	gap: 8,
+																}}
+															>
+																<Pressable onPress={() => setPasswordIsHidden(state => !state)}>
+																	<Image source={require('../assets/images/eye_orange.png')} width={18} height={11} />
+																</Pressable>
 
-													{errors.password && <View>{<Text style={styles.error}>{errors.password.message}</Text>}</View>}
+																{errors.root && <Image source={require('../assets/images/exclamation.png')} style={{ width: 18, height: 18 }} />}
+															</View>
+														}
+													></InputUI>
 												</>
 											)}
 										></Controller>
+
+										{errors.root && <Text style={{ color: Colors.orange, position: 'absolute', right: 14, top: 106 }}>Forgot?</Text>}
 									</View>
 								</View>
 
@@ -168,12 +202,8 @@ const styles = StyleSheet.create({
 		color: Colors.secondary,
 		fontWeight: '400',
 	},
-	eye_image: {
-		position: 'absolute',
-		right: 19,
-		bottom: 40,
-	},
 	error: {
+		position: 'absolute',
 		color: 'red',
 	},
 })

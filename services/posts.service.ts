@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/lib/axiosInstance'
+import { axiosInstance } from '@/lib/axios'
 import { IComment, IPost } from '@/lib/types'
 import { useQuery } from '@tanstack/react-query'
 

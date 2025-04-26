@@ -27,12 +27,13 @@
 			[
 				"expo-splash-screen",
 				{
-					"image": "./assets/images/splash-icon.png",
-					"imageWidth": 200,
+					"image": "./assets/images/loading_icon.png",
+					"imageWidth": 178,
 					"resizeMode": "contain",
 					"backgroundColor": "#ffffff"
 				}
-			]
+			],
+			"expo-secure-store"
 		],
 		"experiments": {
 			"typedRoutes": true

@@ -2,11 +2,11 @@ import { ArrowBack } from '@/components/ui/ArrowBack'
 import { ButtonUI } from '@/components/ui/ButtonUI'
 import { PINPad } from '@/components/ui/PINPad'
 import { Colors } from '@/constants/styles'
-import { setPIN, setUser } from '@/store/slices/authSlice'
-import { RootState } from '@/store/store'
-import React, { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import { savePIN } from '@/lib/auth'
+import { setUser } from '@/store/slices/authSlice'
+import React, { useState } from 'react'
+import { View, Text, Image } from 'react-native'
+import { useDispatch } from 'react-redux'
 
 type Props = {
 	PIN: string[]
@@ -49,7 +49,7 @@ export function RepeatPIN({
 		if (repeatedPIN.length === PIN.length && repeatedPIN.every((value, index) => value === PIN[index])) {
 			setRepeatPinIsShowed(false)
 
-			dispatch(setPIN(repeatedPIN))
+			savePIN(repeatedPIN)
 
 			//@ts-ignore
 			return dispatch(setUser(userData))

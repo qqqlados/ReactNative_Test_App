@@ -1,6 +1,5 @@
-import { setAccessToken } from '@/store/slices/authSlice'
+import * as Keychain from 'react-native-keychain'
 import axios from 'axios'
-import { useDispatch } from 'react-redux'
 import createAuthRefreshInterceptor from 'axios-auth-refresh'
 
 export const axiosInstance = axios.create({
@@ -8,13 +7,14 @@ export const axiosInstance = axios.create({
 })
 
 const refreshAuthLogic = async (failedRequest: any) => {
-	const dispatch = useDispatch()
-
 	try {
 		const response = await axios.post('https://dummyjson.com/auth/refresh')
 
 		const newToken = response.data.Token
-		dispatch(setAccessToken(newToken))
+
+		await Keychain.resetGenericPassword({ service: 'access_token' })
+
+		await Keychain.setGenericPassword('access_token', newToken, { service: 'access_token' })
 
 		failedRequest.response.config.headers['Authorization'] = 'Bearer ' + newToken
 

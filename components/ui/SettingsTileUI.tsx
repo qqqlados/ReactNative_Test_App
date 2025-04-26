@@ -1,6 +1,6 @@
 import { Colors, Radius } from '@/constants/styles'
 import { GestureResponderEvent } from 'react-native'
-import { Image, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native'
 
 type Props = {
 	label?: string

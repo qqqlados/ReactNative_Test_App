@@ -1,19 +1,21 @@
 import { PostItemUI } from '@/components/ui/PostItemUI'
 import { Colors, Radius } from '@/constants/styles'
 import { usePosts } from '@/services/posts.service'
-import { setUser } from '@/store/slices/authSlice'
+import { setEnterPINScreen } from '@/store/slices/authSlice'
 import { RootState } from '@/store/store'
 import { Link } from 'expo-router'
-import { useEffect, useState } from 'react'
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { useEffect } from 'react'
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default function Home() {
-	const { data: posts, isLoading } = usePosts()
-
-	const [loading, setLoading] = useState(true)
+	const { data: posts } = usePosts()
 
 	const dispatch = useDispatch()
+
+	useEffect(() => {
+		dispatch(setEnterPINScreen())
+	}, [])
 
 	const user = useSelector((state: RootState) => state.auth)
 

@@ -1,8 +1,10 @@
 import { Tabs } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
 import { Image } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 export default function TabLayout() {
+	const { t } = useTranslation()
+
 	return (
 		<Tabs
 			screenOptions={({ route }) => ({
@@ -31,16 +33,17 @@ export default function TabLayout() {
 					)
 				},
 				tabBarActiveTintColor: '#FF6600',
+				tabBarStyle: { marginBottom: -10, marginRight: -20, marginLeft: -20 },
 				tabBarInactiveTintColor: 'gray',
-				// tabBarStyle: {},
+
 				headerShown: false,
 				animation: 'shift',
 			})}
 		>
-			<Tabs.Screen name='Home' />
-			<Tabs.Screen name='Portfolio' />
-			<Tabs.Screen name='Search' />
-			<Tabs.Screen name='Profile' />
+			<Tabs.Screen name='Home' options={{ title: t('Home') }} />
+			<Tabs.Screen name='Portfolio' options={{ title: t('Portfolio') }} />
+			<Tabs.Screen name='Search' options={{ title: t('Search') }} />
+			<Tabs.Screen name='Profile' options={{ title: t('Profile') }} />
 		</Tabs>
 	)
 }

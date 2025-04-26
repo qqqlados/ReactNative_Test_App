@@ -6,8 +6,7 @@ interface AuthState {
 	username: string
 	password: string
 	image?: string
-	accessToken: string
-	PIN: string[]
+	isEnterPIN?: boolean
 }
 
 const initialState = {
@@ -15,8 +14,7 @@ const initialState = {
 	username: '',
 	password: '',
 	image: '',
-	accessToken: '',
-	PIN: [],
+	isEnterPIN: false,
 } satisfies AuthState as AuthState
 
 const authSlice = createSlice({
@@ -32,14 +30,14 @@ const authSlice = createSlice({
 		removeUser() {
 			return initialState
 		},
-		setAccessToken(state, action: PayloadAction<string>) {
-			state.accessToken = action.payload
+		setEnterPINScreen(state) {
+			state.isEnterPIN = true
 		},
-		setPIN(state, action: PayloadAction<string[]>) {
-			state.PIN = action.payload
+		removeEnterPINScreen(state) {
+			state.isEnterPIN = false
 		},
 	},
 })
 
-export const { setUser, removeUser, setAccessToken, setPIN } = authSlice.actions
+export const { setUser, removeUser, setEnterPINScreen, removeEnterPINScreen } = authSlice.actions
 export default authSlice.reducer

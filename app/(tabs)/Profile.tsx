@@ -1,38 +1,25 @@
 import { ArrowBack } from '@/components/ui/ArrowBack'
 import { SettingsTileUI } from '@/components/ui/SettingsTileUI'
-import { getUser, loginUser } from '@/lib/auth'
+import { loginUser } from '@/lib/auth'
 import { removeUser, setUser } from '@/store/slices/authSlice'
 import { RootState } from '@/store/store'
 import { useEffect, useState } from 'react'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 export default function Profile() {
 	const [languageIsOpen, setLanguageIsOpen] = useState<boolean>(false)
-	const [selectedLanguage, setSelectedLanguage] = useState<string>('English')
 	const user = useSelector((state: RootState) => state.auth)
 	const [loading, setLoading] = useState(true)
 
-	useEffect(() => {
-		const fetchUser = async () => {
-			const fetchedUser = await getUser()
-
-			if (fetchedUser && fetchedUser.image) {
-				console.log(fetchedUser.image)
-			} else {
-				console.log('image field is not available in fetchedUser.')
-			}
-
-			if (fetchedUser) {
-				dispatch(setUser({ email: fetchedUser.email, username: fetchedUser.username, password: '123111', image: fetchedUser.image }))
-			}
-			setLoading(false)
-		}
-
-		fetchUser()
-	}, [])
-
 	const dispatch = useDispatch()
+	const { t, i18n } = useTranslation()
+
+	const changeLanguage = (lang: 'en' | 'ar') => {
+		i18n.changeLanguage(lang)
+		setLanguageIsOpen(false)
+	}
 
 	return (
 		<>
@@ -43,14 +30,14 @@ export default function Profile() {
 							<Image source={require('../../assets/images/arrow_back.png')} />
 						</Pressable>
 
-						<Text style={styles.text}>Language</Text>
+						<Text style={styles.text}>{t('language')}</Text>
 
 						<View style={{ gap: 16, marginTop: 16 }}>
 							<SettingsTileUI
-								text='English'
+								text={t('english')}
 								icon={<Image source={require('../../assets/images/globus.png')} />}
 								actionButton={
-									selectedLanguage === 'English' ? (
+									i18n.language === 'en' ? (
 										<Image
 											source={require('../../assets/images/selected.png')}
 											width={32}
@@ -66,14 +53,14 @@ export default function Profile() {
 										/>
 									)
 								}
-								onPress={() => setSelectedLanguage('English')}
+								onPress={() => changeLanguage('en')}
 							/>
 
 							<SettingsTileUI
-								text='Arabic'
+								text={t('arabic')}
 								icon={<Image source={require('../../assets/images/globus.png')} />}
 								actionButton={
-									selectedLanguage === 'Arabic' ? (
+									i18n.language === 'ar' ? (
 										<Image
 											source={require('../../assets/images/selected.png')}
 											width={32}
@@ -89,7 +76,7 @@ export default function Profile() {
 										/>
 									)
 								}
-								onPress={() => setSelectedLanguage('Arabic')}
+								onPress={() => changeLanguage('ar')}
 							/>
 						</View>
 					</>
@@ -97,7 +84,7 @@ export default function Profile() {
 					<>
 						<Image source={require('../../assets/images/arrow_back.png')} />
 
-						<Text style={styles.text}>Settings</Text>
+						<Text style={styles.text}>{t('settings')}</Text>
 
 						<View style={{ gap: 32, marginTop: 16 }}>
 							<SettingsTileUI
@@ -108,7 +95,7 @@ export default function Profile() {
 
 							<SettingsTileUI
 								label='Basic'
-								text='Language'
+								text={t('language')}
 								icon={<Image source={require('../../assets/images/globus.png')} />}
 								actionButton={
 									<Image source={require('../../assets/images/arrow_dropdown.png')} style={{ position: 'absolute', top: 20, right: 25 }} />
@@ -118,7 +105,7 @@ export default function Profile() {
 
 							<SettingsTileUI
 								label='Other'
-								text='Log out'
+								text={t('logout')}
 								icon={<Image source={require('../../assets/images/logout.png')} />}
 								actionButton={
 									<Image source={require('../../assets/images/arrow_dropdown.png')} style={{ position: 'absolute', top: 20, right: 25 }} />

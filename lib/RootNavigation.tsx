@@ -4,11 +4,16 @@ import { useSelector } from 'react-redux'
 
 export default function RootNavigation() {
 	const username = useSelector((state: RootState) => state.auth.username)
+	const isEnterPIN = useSelector((state: RootState) => state.auth.isEnterPIN)
 
-	if (username) {
-		return <Redirect href={'/enter-pin'} />
+	if (!username) {
+		return <Redirect href='/' />
+	}
+
+	if (isEnterPIN === true) {
+		return <Redirect href='/enter-pin' />
 	} else {
-		return <Redirect href={'/'} />
+		return <Redirect href='/(tabs)/Home' />
 	}
 
 	return (

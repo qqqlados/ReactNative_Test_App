@@ -6,7 +6,7 @@ import { RegisterSchema } from '@/lib/formSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Image, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 export default function SignUpScreen() {
 	const [passwordIsHidden, setPasswordIsHidden] = useState<boolean>(true)

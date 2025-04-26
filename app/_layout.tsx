@@ -13,6 +13,7 @@ import { Provider, useSelector } from 'react-redux'
 import { store, persistor } from '@/store/store'
 import { PersistGate } from 'redux-persist/integration/react'
 import RootNavigation from '@/lib/RootNavigation'
+import '../lib/languages'
 
 SplashScreen.preventAutoHideAsync()
 

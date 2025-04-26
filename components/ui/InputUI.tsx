@@ -5,33 +5,33 @@ import { StyleSheet, TextInput, TextInputProps, View, Text } from 'react-native'
 type CustomProps = {
 	label?: string
 	isPassword?: boolean
-	icon?: React.ReactNode
-	children?: React.ReactNode
+	leftIcon?: React.ReactNode
+	rightIcon?: React.ReactNode
+	error?: boolean
 }
 
-// Обгортка через forwardRef
 export const InputUI = React.forwardRef<TextInput, TextInputProps & CustomProps>((props, ref) => {
 	return (
 		<>
 			{props.label && <Text style={styles.label}>{props.label}</Text>}
 
-			<View style={{ position: 'relative' }}>
-				{props.icon && <View style={styles.iconWrapper}>{props.icon}</View>}
+			<View style={[styles.inputWrapper, props.error && { borderColor: 'red' }]}>
+				{props.leftIcon && <View style={styles.leftIcon}>{props.leftIcon}</View>}
 
 				<TextInput
-					ref={ref} // ← передаємо ref сюди
+					ref={ref}
 					{...props}
 					style={[
 						styles.input,
 						props.isPassword ? { color: Colors.lightGray } : { color: Colors.primary },
-						{ paddingLeft: props.icon ? 48 : 16 },
+						{ paddingLeft: props.leftIcon ? 48 : 16, paddingRight: props.rightIcon ? 48 : 16 },
 						props.style,
 					]}
 					placeholderTextColor={Colors.secondary}
 				/>
-			</View>
 
-			{props.children && <View>{props.children}</View>}
+				{props.rightIcon && <View style={styles.rightIcon}>{props.rightIcon}</View>}
+			</View>
 		</>
 	)
 })
@@ -42,22 +42,31 @@ const styles = StyleSheet.create({
 		marginBottom: 8,
 		color: Colors.secondary,
 	},
-	input: {
+	inputWrapper: {
 		position: 'relative',
-		height: 56,
-		width: '100%',
+		flexDirection: 'row',
+		alignItems: 'center',
 		borderWidth: 1,
 		borderColor: Colors.borderColor,
 		borderRadius: Radius.r16,
-		paddingVertical: 20,
-		paddingLeft: 16,
+		backgroundColor: 'white',
+		height: 56,
+		width: '100%',
 		marginBottom: 24,
 	},
-	iconWrapper: {
+	input: {
+		flex: 1,
+		height: '100%',
+		fontSize: 16,
+	},
+	leftIcon: {
 		position: 'absolute',
-		top: '37%',
-		transform: [{ translateY: -12 }],
 		left: 16,
+		zIndex: 1,
+	},
+	rightIcon: {
+		position: 'absolute',
+		right: 16,
 		zIndex: 1,
 	},
 })
